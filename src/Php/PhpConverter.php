@@ -209,7 +209,21 @@ class PhpConverter extends AbstractConverter
         $name = $this->getNamingStrategy()->getTypeName($type);
 
         if (!isset($this->namespaces[$schema->getTargetNamespace()])) {
+
+
+            $parentTns = substr($schema->getTargetNamespace(), 0, (strrpos($schema->getTargetNamespace(),'.')+1));
+            $parentWildCartTns = $parentTns.'*';
+            $nsPart = str_replace($parentTns, '', $schema->getTargetNamespace());
+
+            if (!isset($this->namespaces[$parentWildCartTns])) {
             throw new Exception(sprintf("Can't find a PHP namespace to '%s' namespace", $schema->getTargetNamespace()));
+        }
+
+            $parentWildCardNamespace = $this->namespaces[$parentWildCartTns];
+            $this->namespaces[$schema->getTargetNamespace()] = $parentWildCardNamespace.'\\'.$nsPart;
+
+
+
         }
         $ns = $this->namespaces[$schema->getTargetNamespace()];
 
